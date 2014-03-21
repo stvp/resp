@@ -131,14 +131,18 @@ func (r *Reader) indexObjectEnd(start int) int {
 			r.err = err
 			return -1
 		}
-		end := lineEnd
-		for i := 0; i < length; i++ {
-			end = r.indexObjectEnd(end + 1)
-			if end < 0 {
-				return -1
+		if length == -1 {
+			return lineEnd
+		} else {
+			end := lineEnd
+			for i := 0; i < length; i++ {
+				end = r.indexObjectEnd(end + 1)
+				if end < 0 {
+					return -1
+				}
 			}
+			return end
 		}
-		return end
 	default:
 		r.err = ErrSyntaxError
 		return -1

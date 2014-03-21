@@ -45,6 +45,8 @@ func TestReadObjectSlice_Valid(t *testing.T) {
 		{[]byte("-OK\r\n-ERR\r\n"), []byte("-OK\r\n")},
 		// array
 		{[]byte("*2\r\n-OK\r\n-OK\r\n"), []byte("*2\r\n-OK\r\n-OK\r\n")},
+		// null array
+		{[]byte("*-1\r\n"), []byte("*-1\r\n")},
 		// empty array
 		{[]byte("*0\r\n"), []byte("*0\r\n")},
 		// bulk string
