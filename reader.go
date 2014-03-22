@@ -1,7 +1,6 @@
 package resp
 
 import (
-	"bytes"
 	"io"
 )
 
@@ -97,15 +96,15 @@ func (r *Reader) indexObjectEnd(start int) int {
 		return -1
 	}
 
-	lineEnd := r.indexLineEnd(start)
+	lineEnd := indexLineEnd(r.buf[start:])
 	if lineEnd < 0 {
 		return -1
 	}
-
-	if lineEnd-start+1 < MIN_OBJECT_LENGTH {
+	if lineEnd+1 < MIN_OBJECT_LENGTH {
 		r.err = ErrSyntaxError
 		return -1
 	}
+	lineEnd = start + lineEnd
 
 	switch r.buf[start] {
 	case '+', '-', ':':
@@ -147,16 +146,6 @@ func (r *Reader) indexObjectEnd(start int) int {
 		r.err = ErrSyntaxError
 		return -1
 	}
-}
-
-// indexLineEnd returns the buffer index of the final character of the line
-// beginning (or containing) the given buffer index.
-func (r *Reader) indexLineEnd(start int) int {
-	i := bytes.IndexByte(r.buf[start:r.w], '\n')
-	if i > 0 && r.buf[start+i-1] == '\r' {
-		return start + i
-	}
-	return -1
 }
 
 // fill reads new data into the buffer, if possible. If the io.Reader returns
