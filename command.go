@@ -1,10 +1,5 @@
 package resp
 
-var (
-	// The minimum valid command is "*1\r\n$4\r\nPING\r\n"
-	MIN_COMMAND_LENGTH = 14
-)
-
 // Command points to the bytes for a valid RESP command (an array of bulk
 // strings) and provides methods from extracting the raw arguments.
 type Command []byte

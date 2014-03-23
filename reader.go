@@ -4,14 +4,6 @@ import (
 	"io"
 )
 
-const (
-	// A large INFO ALL response can be over 4kb, so we set the default to 8kb.
-	DEFAULT_BUFFER = 8192
-
-	// Smallest valid RESP object is ":0\r\n".
-	MIN_OBJECT_LENGTH = 4
-)
-
 // Reader implements a buffered RESP object reader for an io.Reader object.
 type Reader struct {
 	rd   io.Reader
