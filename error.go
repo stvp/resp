@@ -15,12 +15,35 @@ func NewError(str string) Error {
 	return Error(buf)
 }
 
-// Bytes returns a slice of bytes that points to the raw error message. If the
-// contents of this Error change, the returned byte slice will be invalid.
-func (e Error) Bytes() ([]byte, error) {
+// Slice returns a slice of bytes that points to the raw error message. If the
+// contents of this Error change, the returned byte slice will be invalid. If
+// the RESP format is invalid, a Go error will be returned.
+func (e Error) Slice() ([]byte, error) {
 	if len(e) < 3 || e[0] != '-' || e[len(e)-2] != '\r' || e[len(e)-1] != '\n' {
 		return nil, ErrSyntaxError
 	}
 
 	return e[1 : len(e)-2], nil
+}
+
+// Bytes is the same as Slice except that it returns a copy of the raw error
+// message bytes.
+func (e Error) Bytes() ([]byte, error) {
+	slice, err := e.Slice()
+	if err != nil {
+		return nil, err
+	}
+	bytes := make([]byte, len(slice))
+	copy(bytes, slice)
+	return bytes, err
+}
+
+// String returns the raw error message. If the RESP format is invalid, a Go
+// error will be returned.
+func (e Error) String() (string, error) {
+	slice, err := e.Slice()
+	if err != nil {
+		return "", err
+	}
+	return string(slice), err
 }
