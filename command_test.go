@@ -5,6 +5,27 @@ import (
 	"testing"
 )
 
+type newCommandTest struct {
+	args  []string
+	bytes []byte
+}
+
+func TestNewCommand(t *testing.T) {
+	tests := []newCommandTest{
+		{[]string{}, []byte("*0\r\n")},
+		{[]string{"PING"}, []byte("*1\r\n$4\r\nPING\r\n")},
+		{[]string{"INFO", "ALL"}, []byte("*2\r\n$4\r\nINFO\r\n$3\r\nALL\r\n")},
+		{[]string{"INFO", ""}, []byte("*2\r\n$4\r\nINFO\r\n$0\r\n\r\n")},
+	}
+
+	for i, test := range tests {
+		command := NewCommand(test.args...)
+		if !reflect.DeepEqual(test.bytes, []byte(command)) {
+			t.Errorf("tests[%d]:\nexpected: %v\ngot: %v", i, test.bytes, command)
+		}
+	}
+}
+
 func TestCommandArgs_Invalid(t *testing.T) {
 	tests := [][]byte{
 		// empty

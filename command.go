@@ -1,8 +1,24 @@
 package resp
 
+import (
+	"bytes"
+	"fmt"
+)
+
 // Command points to the bytes for a valid RESP command (an array of bulk
 // strings) and provides methods from extracting the raw arguments.
 type Command []byte
+
+func NewCommand(args ...string) Command {
+	var buf bytes.Buffer
+	fmt.Fprintf(&buf, "*%d\r\n", len(args))
+
+	for _, arg := range args {
+		fmt.Fprintf(&buf, "$%d\r\n%s\r\n", len(arg), arg)
+	}
+
+	return Command(buf.Bytes())
+}
 
 // Args returns a slice of byte slices that point to the raw command arguments
 // of this Command. If the contents of Command change, the returned byte slices
