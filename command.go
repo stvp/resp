@@ -9,6 +9,8 @@ import (
 // strings) and provides methods from extracting the raw arguments.
 type Command []byte
 
+// NewCommand takes any number of command arguments and returns a Command slice
+// pointing to the raw RESP representation of that command.
 func NewCommand(args ...string) Command {
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "*%d\r\n", len(args))
@@ -20,10 +22,10 @@ func NewCommand(args ...string) Command {
 	return Command(buf.Bytes())
 }
 
-// Args returns a slice of byte slices that point to the raw command arguments
+// Slice returns a slice of byte slices that point to the raw command arguments
 // of this Command. If the contents of Command change, the returned byte slices
 // will be invalid.
-func (c Command) Args() ([][]byte, error) {
+func (c Command) Slice() ([][]byte, error) {
 	if len(c) < MIN_COMMAND_LENGTH || c[0] != '*' {
 		return nil, ErrSyntaxError
 	}
@@ -63,4 +65,37 @@ func (c Command) Args() ([][]byte, error) {
 	}
 
 	return args, nil
+}
+
+// Bytes is the same as Slice except that it returns copies of the byte slices
+// for each individual command argument.
+func (c Command) Bytes() ([][]byte, error) {
+	slices, err := c.Slice()
+	if slices == nil {
+		return nil, err
+	}
+
+	bytes := make([][]byte, len(slices))
+	for i, slice := range slices {
+		bytes[i] = make([]byte, len(slice))
+		copy(bytes[i], slice)
+	}
+
+	return bytes, err
+}
+
+// Strings returns the Command's arguments as strings. If the underlying RESP
+// format is invalid, an error will be returned.
+func (c Command) Strings() ([]string, error) {
+	slices, err := c.Slice()
+	if slices == nil {
+		return nil, err
+	}
+
+	strings := make([]string, len(slices))
+	for i, slice := range slices {
+		strings[i] = string(slice)
+	}
+
+	return strings, err
 }

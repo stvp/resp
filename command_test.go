@@ -26,7 +26,7 @@ func TestNewCommand(t *testing.T) {
 	}
 }
 
-func TestCommandArgs_Invalid(t *testing.T) {
+func TestCommandSlice_Invalid(t *testing.T) {
 	tests := [][]byte{
 		// empty
 		[]byte(""),
@@ -44,7 +44,18 @@ func TestCommandArgs_Invalid(t *testing.T) {
 
 	for i, test := range tests {
 		command := Command(test)
-		_, err := command.Args()
+
+		_, err := command.Slice()
+		if err == nil {
+			t.Errorf("test[%d]: expected error but got none", i)
+		}
+
+		_, err = command.Bytes()
+		if err == nil {
+			t.Errorf("test[%d]: expected error but got none", i)
+		}
+
+		_, err = command.Strings()
 		if err == nil {
 			t.Errorf("test[%d]: expected error but got none", i)
 		}
@@ -56,7 +67,7 @@ type commandTest struct {
 	expected [][]byte
 }
 
-func TestCommandArgs_Valid(t *testing.T) {
+func TestCommandSlice_Valid(t *testing.T) {
 	tests := []commandTest{
 		{[]byte("*1\r\n$4\r\nPING\r\n"), [][]byte{[]byte("PING")}},
 		{[]byte("*2\r\n$4\r\nINFO\r\n$3\r\nALL\r\n"), [][]byte{[]byte("INFO"), []byte("ALL")}},
@@ -64,11 +75,30 @@ func TestCommandArgs_Valid(t *testing.T) {
 
 	for i, test := range tests {
 		command := Command(test.given)
-		args, err := command.Args()
+
+		args, err := command.Slice()
 		if err != nil {
 			t.Errorf("tests[%d]: %s", i, err.Error())
 		} else if !reflect.DeepEqual(test.expected, args) {
 			t.Errorf("tests[%d]:\nexpected: %v\ngot: %v", i, test.expected, args)
+		}
+
+		args, err = command.Bytes()
+		if err != nil {
+			t.Errorf("tests[%d]: %s", i, err.Error())
+		} else if !reflect.DeepEqual(test.expected, args) {
+			t.Errorf("tests[%d]:\nexpected: %v\ngot: %v", i, test.expected, args)
+		}
+
+		expectedStrings := make([]string, len(test.expected))
+		for i, bytes := range test.expected {
+			expectedStrings[i] = string(bytes)
+		}
+		stringArgs, err := command.Strings()
+		if err != nil {
+			t.Errorf("tests[%d]: %s", i, err.Error())
+		} else if !reflect.DeepEqual(expectedStrings, stringArgs) {
+			t.Errorf("tests[%d]:\nexpected: %v\ngot: %v", i, expectedStrings, stringArgs)
 		}
 	}
 }
