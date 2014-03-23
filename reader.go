@@ -92,29 +92,29 @@ func (r *Reader) Buffered() int {
 // beginning at the given position. It returns -1 if a valid object can't be
 // found.
 func (r *Reader) indexObjectEnd(start int) int {
-	if r.Buffered() < MIN_OBJECT_LENGTH {
+	if r.Buffered()-start < MIN_OBJECT_LENGTH {
 		return -1
 	}
-
-	lineEnd := indexLineEnd(r.buf[start:])
-	if lineEnd < 0 {
-		return -1
-	}
-	if lineEnd+1 < MIN_OBJECT_LENGTH {
-		r.err = ErrSyntaxError
-		return -1
-	}
-	lineEnd = start + lineEnd
 
 	switch r.buf[start] {
 	case '+', '-', ':':
-		return lineEnd
+		lineEnd := indexLineEnd(r.buf[start:])
+		if lineEnd < 0 {
+			return -1
+		}
+		if lineEnd+1 < MIN_OBJECT_LENGTH {
+			r.err = ErrSyntaxError
+			return -1
+		}
+		return start + lineEnd
 	case '$':
-		length, _, err := parseLenLine(r.buf[start : lineEnd+1])
+		length, lineEnd, err := parseLenLine(r.buf[start:])
 		if err != nil {
 			r.err = err
 			return -1
 		}
+
+		lineEnd += start
 		if length == -1 {
 			return lineEnd
 		} else {
@@ -125,11 +125,13 @@ func (r *Reader) indexObjectEnd(start int) int {
 			return bulkStringEnd
 		}
 	case '*':
-		length, _, err := parseLenLine(r.buf[start : lineEnd+1])
+		length, lineEnd, err := parseLenLine(r.buf[start:])
 		if err != nil {
 			r.err = err
 			return -1
 		}
+
+		lineEnd += start
 		if length == -1 {
 			return lineEnd
 		} else {

@@ -19,7 +19,7 @@ func parseLenLine(line []byte) (length int, endIndex int, err error) {
 	}
 
 	// Shortcut for null bulk strings
-	if len(line) == 5 && line[1] == '-' && line[2] == '1' {
+	if len(line) > 4 && line[1] == '-' && line[2] == '1' && line[3] == '\r' && line[4] == '\n' {
 		return -1, 4, nil
 	}
 
