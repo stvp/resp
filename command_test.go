@@ -17,6 +17,8 @@ func TestCommandArgs_Invalid(t *testing.T) {
 		[]byte("*1\r\n$100\r\noops"),
 		// nil bulk string
 		[]byte("*1\r\n$-1\r\n"),
+		// too short
+		[]byte("*1\r\n$3\r\nLOL\r\n"),
 	}
 
 	for i, test := range tests {
