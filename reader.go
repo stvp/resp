@@ -110,7 +110,7 @@ func (r *Reader) indexObjectEnd(start int) int {
 	case '+', '-', ':':
 		return lineEnd
 	case '$':
-		length, err := parseLenLine(r.buf[start : lineEnd+1])
+		length, _, err := parseLenLine(r.buf[start : lineEnd+1])
 		if err != nil {
 			r.err = err
 			return -1
@@ -125,7 +125,7 @@ func (r *Reader) indexObjectEnd(start int) int {
 			return bulkStringEnd
 		}
 	case '*':
-		length, err := parseLenLine(r.buf[start : lineEnd+1])
+		length, _, err := parseLenLine(r.buf[start : lineEnd+1])
 		if err != nil {
 			r.err = err
 			return -1

@@ -4,29 +4,40 @@ import (
 	"bytes"
 )
 
-// parseLenLine takes a valid RESP array or bulk string length specification
-// and returns the specified length. It returns -1 for null bulk strings. If
-// the line is invalid, an error will be returned.
-func parseLenLine(line []byte) (int, error) {
-	if len(line) < 4 {
-		return -1, ErrSyntaxError
+// parseLenLine takes a RESP array or bulk string length specification and
+// returns the specified length as well as the index of the final character of
+// the length specification line. It returns a length of -1 for null bulk
+// strings. If the line is invalid, an error will be returned. Trailing
+// characters are ignored.
+func parseLenLine(line []byte) (length int, endIndex int, err error) {
+	if len(line) < MIN_OBJECT_LENGTH {
+		return -1, -1, ErrSyntaxError
+	}
+
+	if line[0] != '*' && line[0] != '$' {
+		return -1, -1, ErrSyntaxError
 	}
 
 	// Shortcut for null bulk strings
 	if len(line) == 5 && line[1] == '-' && line[2] == '1' {
-		return -1, nil
+		return -1, 4, nil
 	}
 
 	var n int
-	for _, b := range line[1 : len(line)-2] {
-		n *= 10
-		if b < '0' || b > '9' {
-			return -1, ErrSyntaxError
+	var b byte
+	var i int
+	for i, b = range line[1 : len(line)-2] {
+		if b == '\r' {
+			return n, i + 2, nil
 		}
+		if b < '0' || b > '9' {
+			return -1, i + 3, ErrSyntaxError
+		}
+		n *= 10
 		n += int(b - '0')
 	}
 
-	return n, nil
+	return n, i + 3, nil
 }
 
 // indexLineEnd returns the index of the final character of the first line in
