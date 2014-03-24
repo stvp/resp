@@ -7,29 +7,6 @@ import (
 	"testing"
 )
 
-func TestReadObjectSlice_Invalid(t *testing.T) {
-	tests := [][]byte{
-		// empty
-		[]byte{},
-		// no delimiter
-		[]byte("-OK"),
-		// invalid delimiter
-		[]byte("-OK\r"),
-		// invalid prefix
-		[]byte("OK\r\n"),
-		// array with invalid length
-		[]byte("*5\r\n-OK\r\n"),
-	}
-
-	for i, test := range tests {
-		reader := NewReader(bytes.NewReader(test))
-		_, err := reader.ReadObjectSlice()
-		if err == nil {
-			t.Errorf("tests[%d]: expected an error but didn't get one", i)
-		}
-	}
-}
-
 type respTest struct {
 	given    []byte
 	expected []byte
@@ -68,6 +45,29 @@ func TestReadObjectSlice_Valid(t *testing.T) {
 			t.Errorf("tests[%d]: %s", i, err.Error())
 		} else if !reflect.DeepEqual(test.expected, object) {
 			t.Errorf("tests[%d]:\nexpected: %v\ngot: %v", i, test.expected, object)
+		}
+	}
+}
+
+func TestReadObjectSlice_Invalid(t *testing.T) {
+	tests := [][]byte{
+		// empty
+		[]byte{},
+		// no delimiter
+		[]byte("-OK"),
+		// invalid delimiter
+		[]byte("-OK\r"),
+		// invalid prefix
+		[]byte("OK\r\n"),
+		// array with invalid length
+		[]byte("*5\r\n-OK\r\n"),
+	}
+
+	for i, test := range tests {
+		reader := NewReader(bytes.NewReader(test))
+		_, err := reader.ReadObjectSlice()
+		if err == nil {
+			t.Errorf("tests[%d]: expected an error but didn't get one", i)
 		}
 	}
 }

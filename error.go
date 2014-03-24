@@ -2,48 +2,33 @@ package resp
 
 // Error points to the bytes for a valid RESP error and provides methods for
 // extracting the error message.
-type Error []byte
+type Error RESP
 
-// NewError accepts an error message and returns the RESP representation of the
-// error as an Error.
-func NewError(str string) Error {
-	buf := make([]byte, 1+len(str)+2)
-	buf[0] = '-'
-	copy(buf[1:], []byte(str))
-	buf[len(buf)-2] = '\r'
-	buf[len(buf)-1] = '\n'
-	return Error(buf)
-}
-
-// Slice returns a slice of bytes that points to the raw error message. If the
-// contents of this Error change, the returned byte slice will be invalid. If
-// the RESP format is invalid, a Go error will be returned.
-func (e Error) Slice() ([]byte, error) {
-	if len(e) < 3 || e[0] != '-' || e[len(e)-2] != '\r' || e[len(e)-1] != '\n' {
+func NewError(resp []byte) (Error, error) {
+	if !validRESPLine(ERROR_PREFIX, resp) {
 		return nil, ErrSyntaxError
 	}
-
-	return e[1 : len(e)-2], nil
+	return Error(resp), nil
 }
 
-// Bytes is the same as Slice except that it returns a copy of the raw error
-// message bytes.
-func (e Error) Bytes() ([]byte, error) {
-	slice, err := e.Slice()
-	if err != nil {
-		return nil, err
-	}
+// NewErrorString takes an error message and returns an Error pointing to the
+// RESP representation of that error message.
+func NewErrorString(s string) Error {
+	bytes := make([]byte, 1+len(s)+2)
+	bytes[0] = '-'
+	copy(bytes[1:], []byte(s))
+	bytes[len(bytes)-2] = '\r'
+	bytes[len(bytes)-1] = '\n'
+	return Error(bytes)
+}
+
+func (e Error) Slice() []byte {
+	return e[1 : len(e)-2]
+}
+
+func (e Error) Bytes() []byte {
+	slice := e.Slice()
 	bytes := make([]byte, len(slice))
 	copy(bytes, slice)
-	return bytes, err
-}
-
-// String returns the raw error message. If the RESP format is invalid, a Go
-// error will be returned.
-func (e Error) String() (string, error) {
-	slice, err := e.Slice()
-	if err != nil {
-		return "", err
-	}
-	return string(slice), err
+	return bytes
 }
