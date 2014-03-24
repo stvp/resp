@@ -1,25 +1,17 @@
 package resp
 
-// Error points to the bytes for a valid RESP error and provides methods for
-// extracting the error message.
-type Error RESP
+import (
+	"bytes"
+)
 
-func NewError(resp []byte) (Error, error) {
-	if !validRESPLine(ERROR_PREFIX, resp) {
-		return nil, ErrSyntaxError
-	}
-	return Error(resp), nil
-}
+type Error []byte
 
-// NewErrorString takes an error message and returns an Error pointing to the
-// RESP representation of that error message.
-func NewErrorString(s string) Error {
-	bytes := make([]byte, 1+len(s)+2)
-	bytes[0] = '-'
-	copy(bytes[1:], []byte(s))
-	bytes[len(bytes)-2] = '\r'
-	bytes[len(bytes)-1] = '\n'
-	return Error(bytes)
+func NewError(s string) Error {
+	var buf bytes.Buffer
+	buf.WriteByte(ERROR_PREFIX)
+	buf.WriteString(s)
+	buf.Write(LineEnding)
+	return Error(buf.Bytes())
 }
 
 func (e Error) Slice() []byte {

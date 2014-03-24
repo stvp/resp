@@ -1,6 +1,7 @@
 package resp
 
 import (
+	"bytes"
 	"fmt"
 )
 
@@ -11,7 +12,7 @@ const (
 	// Smallest valid RESP object is ":0\r\n".
 	MIN_OBJECT_LENGTH = 4
 
-	// The minimum valid command object is "*1\r\n$4\r\nPING\r\n"
+	// The minimum valid command is "*1\r\n$4\r\nPING\r\n"
 	MIN_COMMAND_LENGTH = 14
 
 	// RESP type prefixes
@@ -20,36 +21,42 @@ const (
 	INTEGER_PREFIX       = ':'
 	BULK_STRING_PREFIX   = '$'
 	ARRAY_PREFIX         = '*'
+
+	// Common replies
+	OK   = "OK"
+	PONG = "PONG"
 )
 
 var (
-	// Not really a constant, but...
-	LINE_ENDING = []byte("\r\n")
+	LineEnding = []byte{'\r', '\n'}
 
 	// Errors
 	ErrSyntaxError = fmt.Errorf("resp: syntax error")
 	ErrBufferFull  = fmt.Errorf("resp: object is larger than buffer")
 )
 
-// RESP points to the bytes of a RESP object.
-type RESP []byte
-
-func NewRESP(bytes []byte) (interface{}, error) {
-	if len(bytes) == 0 {
+func Load(line []byte) (interface{}, error) {
+	if len(line) < MIN_OBJECT_LENGTH || !bytes.HasSuffix(line, LineEnding) {
 		return nil, ErrSyntaxError
 	}
 
-	switch bytes[0] {
+	switch line[0] {
 	case SIMPLE_STRING_PREFIX:
-		return NewSimpleString(bytes)
+		if len(line) == 5 && line[1] == 'O' && line[2] == 'K' {
+			return OK, nil
+		} else if len(line) == 7 && line[1] == 'P' && line[2] == 'O' && line[3] == 'N' && line[4] == 'G' {
+			return PONG, nil
+		} else {
+			return SimpleString(line), nil
+		}
 	case ERROR_PREFIX:
-		return NewError(bytes)
+		return Error(line), nil
 	case INTEGER_PREFIX:
-		return NewInteger(bytes)
+		return Integer(line), nil
 	case BULK_STRING_PREFIX:
-		return NewBulkString(bytes)
+		return BulkString(line), nil
 	case ARRAY_PREFIX:
-		return NewArray(bytes)
+		return Array(line), nil
 	default:
 		return nil, ErrSyntaxError
 	}

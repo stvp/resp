@@ -5,13 +5,13 @@ import (
 	"fmt"
 )
 
-type Command RESP
+type Command []byte
 
-func NewCommand(resp []byte) (Command, error) {
-	if !validRESPLine(ARRAY_PREFIX, resp) {
+func NewCommand(line []byte) (Command, error) {
+	if len(line) < MIN_OBJECT_LENGTH || !bytes.HasSuffix(line, LineEnding) {
 		return nil, ErrSyntaxError
 	}
-	return Command(resp), nil
+	return Command(line), nil
 }
 
 func NewCommandStrings(args ...string) Command {

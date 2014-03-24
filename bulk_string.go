@@ -5,22 +5,15 @@ import (
 	"fmt"
 )
 
-type BulkString RESP
+type BulkString []byte
 
-func NewBulkString(resp []byte) (BulkString, error) {
-	if len(resp) < MIN_OBJECT_LENGTH || resp[0] != BULK_STRING_PREFIX || !bytes.HasSuffix(resp, LINE_ENDING) {
-		return nil, ErrSyntaxError
-	}
-	return BulkString(resp), nil
-}
-
-func NewBulkStringString(s string) BulkString {
+func NewBulkString(s string) BulkString {
 	var buf bytes.Buffer
 	buf.WriteByte(BULK_STRING_PREFIX)
 	fmt.Fprintf(&buf, "%d", len(s))
-	buf.Write(LINE_ENDING)
+	buf.Write(LineEnding)
 	buf.WriteString(s)
-	buf.Write(LINE_ENDING)
+	buf.Write(LineEnding)
 	return BulkString(buf.Bytes())
 }
 

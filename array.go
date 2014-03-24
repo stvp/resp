@@ -1,12 +1,7 @@
 package resp
 
-type Array RESP
-
-func NewArray(resp []byte) (Array, error) {
-	if !validRESPLine(ARRAY_PREFIX, resp) {
-		return nil, ErrSyntaxError
-	}
-	return Array(resp), nil
-}
+type Array []byte
 
 // TODO
+// func NewArray(objects interface{}...) Array {}
+// func (a Array) Objects() ([]interface{}, error) {}

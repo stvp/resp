@@ -50,7 +50,3 @@ func indexLineEnd(slice []byte) int {
 	}
 	return -1
 }
-
-func validRESPLine(prefix byte, line []byte) bool {
-	return len(line) >= MIN_OBJECT_LENGTH && line[0] == prefix && bytes.HasSuffix(line, LINE_ENDING)
-}

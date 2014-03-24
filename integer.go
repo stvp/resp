@@ -4,16 +4,9 @@ import (
 	"strconv"
 )
 
-type Integer RESP
+type Integer []byte
 
-func NewInteger(resp []byte) (Integer, error) {
-	if !validRESPLine(INTEGER_PREFIX, resp) {
-		return nil, ErrSyntaxError
-	}
-	return Integer(resp), nil
-}
-
-func NewIntegerInt64(i int64) Integer {
+func NewInteger(i int64) Integer {
 	buf := []byte{INTEGER_PREFIX}
 	strconv.AppendInt(buf, i, 10)
 	buf = append(buf, '\r', '\n')

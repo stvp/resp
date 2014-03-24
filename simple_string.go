@@ -4,20 +4,13 @@ import (
 	"bytes"
 )
 
-type SimpleString RESP
+type SimpleString []byte
 
-func NewSimpleString(resp []byte) (SimpleString, error) {
-	if !validRESPLine(SIMPLE_STRING_PREFIX, resp) {
-		return nil, ErrSyntaxError
-	}
-	return SimpleString(resp), nil
-}
-
-func NewSimpleStringString(s string) SimpleString {
+func NewSimpleString(s string) SimpleString {
 	var buf bytes.Buffer
 	buf.WriteByte(SIMPLE_STRING_PREFIX)
 	buf.WriteString(s)
-	buf.Write(LINE_ENDING)
+	buf.Write(LineEnding)
 	return SimpleString(buf.Bytes())
 }
 
