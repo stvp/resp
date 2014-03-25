@@ -7,14 +7,7 @@ import (
 
 type Command []byte
 
-func NewCommand(line []byte) (Command, error) {
-	if len(line) < MIN_OBJECT_LENGTH || !bytes.HasSuffix(line, lineSuffix) {
-		return nil, ErrSyntaxError
-	}
-	return Command(line), nil
-}
-
-func NewCommandStrings(args ...string) Command {
+func NewCommand(args ...string) Command {
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "*%d\r\n", len(args))
 

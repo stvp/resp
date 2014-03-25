@@ -96,7 +96,7 @@ func TestNewCommandStrings(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		command := NewCommandStrings(test.args...)
+		command := NewCommand(test.args...)
 		if !reflect.DeepEqual(test.bytes, []byte(command)) {
 			t.Errorf("tests[%d]:\nexpected: %v\ngot: %v", i, test.bytes, command)
 		}
