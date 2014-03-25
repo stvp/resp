@@ -10,7 +10,7 @@ func NewError(s string) Error {
 	var buf bytes.Buffer
 	buf.WriteByte(ERROR_PREFIX)
 	buf.WriteString(s)
-	buf.Write(LineEnding)
+	buf.Write(lineSuffix)
 	return Error(buf.Bytes())
 }
 

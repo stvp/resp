@@ -24,29 +24,31 @@ const (
 )
 
 var (
-	LineEnding = []byte{'\r', '\n'}
-
 	// Errors
 	ErrSyntaxError = fmt.Errorf("resp: syntax error")
 	ErrBufferFull  = fmt.Errorf("resp: object is larger than buffer")
+
+	lineSuffix = []byte("\r\n")
+	okPrefix   = []byte("+OK")
+	pongPrefix = []byte("+PONG")
 )
 
-func Load(line []byte) (interface{}, error) {
-	if len(line) < MIN_OBJECT_LENGTH || !bytes.HasSuffix(line, LineEnding) {
+func Load(resp []byte) (interface{}, error) {
+	if len(resp) < MIN_OBJECT_LENGTH || !bytes.HasSuffix(resp, lineSuffix) {
 		return nil, ErrSyntaxError
 	}
 
-	switch line[0] {
+	switch resp[0] {
 	case SIMPLE_STRING_PREFIX:
-		return SimpleString(line), nil
+		return String(resp), nil
 	case ERROR_PREFIX:
-		return Error(line), nil
+		return Error(resp), nil
 	case INTEGER_PREFIX:
-		return Integer(line), nil
+		return Integer(resp), nil
 	case BULK_STRING_PREFIX:
-		return BulkString(line), nil
+		return String(resp), nil
 	case ARRAY_PREFIX:
-		return Array(line), nil
+		return Array(resp), nil
 	default:
 		return nil, ErrSyntaxError
 	}

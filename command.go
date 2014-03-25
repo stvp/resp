@@ -8,7 +8,7 @@ import (
 type Command []byte
 
 func NewCommand(line []byte) (Command, error) {
-	if len(line) < MIN_OBJECT_LENGTH || !bytes.HasSuffix(line, LineEnding) {
+	if len(line) < MIN_OBJECT_LENGTH || !bytes.HasSuffix(line, lineSuffix) {
 		return nil, ErrSyntaxError
 	}
 	return Command(line), nil
