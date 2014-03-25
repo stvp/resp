@@ -24,3 +24,7 @@ func (e Error) Bytes() []byte {
 	copy(bytes, slice)
 	return bytes
 }
+
+func (e Error) Error() string {
+	return string(e.Slice())
+}

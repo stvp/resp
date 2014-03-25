@@ -33,16 +33,19 @@ var (
 	pongPrefix = []byte("+PONG")
 )
 
-func Load(resp []byte) (interface{}, error) {
+func Parse(resp []byte, err error) (interface{}, error) {
+	if err != nil {
+		return resp, err
+	}
 	if len(resp) < MIN_OBJECT_LENGTH || !bytes.HasSuffix(resp, lineSuffix) {
-		return nil, ErrSyntaxError
+		return resp, ErrSyntaxError
 	}
 
 	switch resp[0] {
 	case SIMPLE_STRING_PREFIX:
 		return String(resp), nil
 	case ERROR_PREFIX:
-		return Error(resp), nil
+		return nil, ErrSyntaxError
 	case INTEGER_PREFIX:
 		return Integer(resp), nil
 	case BULK_STRING_PREFIX:
