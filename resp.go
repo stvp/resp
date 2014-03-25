@@ -21,10 +21,6 @@ const (
 	INTEGER_PREFIX       = ':'
 	BULK_STRING_PREFIX   = '$'
 	ARRAY_PREFIX         = '*'
-
-	// Common replies
-	OK   = "OK"
-	PONG = "PONG"
 )
 
 var (
@@ -42,13 +38,7 @@ func Load(line []byte) (interface{}, error) {
 
 	switch line[0] {
 	case SIMPLE_STRING_PREFIX:
-		if len(line) == 5 && line[1] == 'O' && line[2] == 'K' {
-			return OK, nil
-		} else if len(line) == 7 && line[1] == 'P' && line[2] == 'O' && line[3] == 'N' && line[4] == 'G' {
-			return PONG, nil
-		} else {
-			return SimpleString(line), nil
-		}
+		return SimpleString(line), nil
 	case ERROR_PREFIX:
 		return Error(line), nil
 	case INTEGER_PREFIX:

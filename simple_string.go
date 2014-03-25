@@ -24,3 +24,11 @@ func (s SimpleString) Bytes() []byte {
 	copy(bytes, slice)
 	return bytes
 }
+
+func (s SimpleString) IsOk() bool {
+	return len(s) == 5 && s[1] == 'O' && s[2] == 'K'
+}
+
+func (s SimpleString) IsPong() bool {
+	return len(s) == 7 && s[1] == 'P' && s[2] == 'O' && s[3] == 'N' && s[4] == 'G'
+}
