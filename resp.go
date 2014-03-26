@@ -53,6 +53,6 @@ func Parse(resp []byte, err error) (interface{}, error) {
 	case ARRAY_PREFIX:
 		return Array(resp), nil
 	default:
-		return nil, ErrSyntaxError
+		return resp, ErrSyntaxError
 	}
 }
