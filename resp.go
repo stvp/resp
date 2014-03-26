@@ -2,7 +2,7 @@ package resp
 
 import (
 	"bytes"
-	"fmt"
+	"errors"
 )
 
 const (
@@ -25,8 +25,8 @@ const (
 
 var (
 	// Errors
-	ErrSyntaxError = fmt.Errorf("resp: syntax error")
-	ErrBufferFull  = fmt.Errorf("resp: object is larger than buffer")
+	ErrSyntaxError = errors.New("resp: syntax error")
+	ErrBufferFull  = errors.New("resp: object is larger than buffer")
 
 	lineSuffix = []byte("\r\n")
 	okPrefix   = []byte("+OK")
@@ -45,7 +45,7 @@ func Parse(resp []byte, err error) (interface{}, error) {
 	case SIMPLE_STRING_PREFIX:
 		return String(resp), nil
 	case ERROR_PREFIX:
-		return nil, ErrSyntaxError
+		return Error(resp), Error(resp)
 	case INTEGER_PREFIX:
 		return Integer(resp), nil
 	case BULK_STRING_PREFIX:
