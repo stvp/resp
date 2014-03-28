@@ -15,7 +15,17 @@ func NewCommand(args ...string) Command {
 		fmt.Fprintf(&buf, "$%d\r\n%s\r\n", len(arg), arg)
 	}
 
-	return Command(buf.Bytes())
+	return buf.Bytes()
+}
+
+func ParseCommand(resp []byte, err error) (Command, error) {
+	if err != nil {
+		return resp, err
+	}
+	if len(resp) < MIN_COMMAND_LENGTH || resp[0] != ARRAY_PREFIX || !bytes.HasSuffix(resp, lineSuffix) {
+		return resp, ErrSyntaxError
+	}
+	return resp, nil
 }
 
 func (c Command) Slices() ([][]byte, error) {

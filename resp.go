@@ -33,7 +33,7 @@ var (
 	pongPrefix = []byte("+PONG")
 )
 
-func Parse(resp []byte, err error) (interface{}, error) {
+func Parse(resp []byte, err error) ([]byte, error) {
 	if err != nil {
 		return resp, err
 	}

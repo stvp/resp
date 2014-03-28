@@ -75,7 +75,7 @@ func (r *Reader) ReadObjectBytes() ([]byte, error) {
 	return copied, err
 }
 
-// Buffered returns the number of bytes in the buffer.
+// Buffered returns the number of bytes currently buffered.
 func (r *Reader) Buffered() int {
 	return r.w - r.r
 }
