@@ -1,5 +1,11 @@
 package resp
 
+var (
+	// Common strings
+	OK   = String([]byte("+OK\r\n"))
+	PONG = String([]byte("+PONG\r\n"))
+)
+
 // String points to the bytes for a RESP simple string or bulk string.
 type String []byte
 
