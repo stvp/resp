@@ -5,8 +5,11 @@ import (
 	"fmt"
 )
 
+// Command points to the bytes for a RESP command (an array of bulk strings).
 type Command []byte
 
+// NewCommand takes a Redis command and arguments and returns a Command byte
+// slice pointing to the RESP for the command.
 func NewCommand(args ...string) Command {
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "*%d\r\n", len(args))
@@ -18,6 +21,8 @@ func NewCommand(args ...string) Command {
 	return buf.Bytes()
 }
 
+// ParseCommand takes a slice pointing to the bytes of a RESP array of bulk
+// strings and returns a Command slice pointing to the same bytes.
 func ParseCommand(resp []byte, err error) (Command, error) {
 	if err != nil {
 		return resp, err
@@ -28,6 +33,9 @@ func ParseCommand(resp []byte, err error) (Command, error) {
 	return resp, nil
 }
 
+// Slices returns a slice of byte slices that point to each argument in this
+// Command. It returns a ErrSyntaxError error if the command RESP bytes are
+// invalid.
 func (c Command) Slices() ([][]byte, error) {
 	if len(c) < MIN_COMMAND_LENGTH || c[0] != '*' {
 		return nil, ErrSyntaxError
@@ -70,6 +78,8 @@ func (c Command) Slices() ([][]byte, error) {
 	return args, nil
 }
 
+// Bytes is the same as Slices except that it returns slices that point to
+// copies of the bytes.
 func (c Command) Bytes() ([][]byte, error) {
 	slices, err := c.Slices()
 	if slices == nil {
@@ -85,6 +95,8 @@ func (c Command) Bytes() ([][]byte, error) {
 	return bytes, err
 }
 
+// Strings is the same as Slices except that it returns strings for each
+// argument.
 func (c Command) Strings() ([]string, error) {
 	slices, err := c.Slices()
 	if slices == nil {
