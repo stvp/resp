@@ -1,7 +1,6 @@
 package resp
 
 import (
-	"errors"
 	"reflect"
 	"testing"
 )
@@ -101,39 +100,5 @@ func TestNewCommandStrings(t *testing.T) {
 		if !reflect.DeepEqual(test.bytes, []byte(command)) {
 			t.Errorf("tests[%d]:\nexpected: %v\ngot: %v", i, test.bytes, command)
 		}
-	}
-}
-
-func TestParseCommand(t *testing.T) {
-	good := [][]byte{
-		[]byte("*1\r\n$4\r\nPING\r\n"),
-		[]byte("*2\r\n$4\r\nINFO\r\n$3\r\nALL\r\n"),
-	}
-
-	bad := [][]byte{
-		[]byte(""),
-		[]byte("$4\r\noops\r\n"),
-		[]byte("*1\r\n$4\r\nPING"),
-		[]byte("*1\r\n$4\r\nPING\r"),
-	}
-
-	for i, goodBytes := range good {
-		_, err := ParseCommand(goodBytes, nil)
-		if err != nil {
-			t.Errorf("good[%d]: %s", i, err.Error())
-		}
-	}
-
-	for i, badBytes := range bad {
-		_, err := ParseCommand(badBytes, nil)
-		if err != ErrSyntaxError {
-			t.Errorf("bad[%d]: expected a ErrSyntaxError, got: %#v", i, err)
-		}
-	}
-
-	expectedError := errors.New("oops")
-	_, err := ParseCommand(good[0], expectedError)
-	if err != expectedError {
-		t.Errorf("passing an error to ParseCommand returned %#v instead of the given error", err)
 	}
 }

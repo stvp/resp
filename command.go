@@ -21,23 +21,12 @@ func NewCommand(args ...string) Command {
 	return buf.Bytes()
 }
 
-// ParseCommand takes a slice pointing to the bytes of a RESP array of bulk
-// strings and returns a Command slice pointing to the same bytes.
-func ParseCommand(resp []byte, err error) (Command, error) {
-	if err != nil {
-		return resp, err
-	}
-	if len(resp) < MIN_COMMAND_LENGTH || resp[0] != ARRAY_PREFIX || !bytes.HasSuffix(resp, lineSuffix) {
-		return resp, ErrSyntaxError
-	}
-	return resp, nil
-}
-
 // Slices returns a slice of byte slices that point to each argument in this
 // Command. It returns a ErrSyntaxError error if the command RESP bytes are
 // invalid.
 func (c Command) Slices() ([][]byte, error) {
-	if len(c) < MIN_COMMAND_LENGTH || c[0] != '*' {
+	// Check for basic validity
+	if len(c) < MIN_COMMAND_LENGTH || c[0] != ARRAY_PREFIX || !bytes.HasSuffix(c, lineSuffix) {
 		return nil, ErrSyntaxError
 	}
 

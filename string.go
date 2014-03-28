@@ -1,7 +1,9 @@
 package resp
 
+// String points to the bytes for a RESP simple string or bulk string.
 type String []byte
 
+// Slice returns a slice pointing to the bytes of the string contents.
 func (s String) Slice() []byte {
 	if s[0] == BULK_STRING_PREFIX {
 		length, lengthEndIndex, err := parseLenLine(s)
@@ -14,10 +16,11 @@ func (s String) Slice() []byte {
 		}
 	}
 
-	// Assume simple string
+	// Otherwise, assume simple string
 	return s[1 : len(s)-2]
 }
 
+// Bytes is the same as Slice except that it returns a copied slice.
 func (s String) Bytes() []byte {
 	slice := s.Slice()
 	bytes := make([]byte, len(slice))

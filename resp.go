@@ -15,7 +15,7 @@ const (
 	// The minimum valid command is "*1\r\n$4\r\nPING\r\n"
 	MIN_COMMAND_LENGTH = 14
 
-	// RESP type prefixes
+	// RESP object prefixes
 	SIMPLE_STRING_PREFIX = '+'
 	ERROR_PREFIX         = '-'
 	INTEGER_PREFIX       = ':'
@@ -33,10 +33,10 @@ var (
 	pongPrefix = []byte("+PONG")
 )
 
-func Parse(resp []byte, err error) ([]byte, error) {
-	if err != nil {
-		return resp, err
-	}
+// Parse takes a bytes slice for a single RESP object and returns the bytes
+// wrapped with the correct type (String, Error, Integer, or Array). If the
+// RESP is invalid, ErrSyntaxError will be returned.
+func Parse(resp []byte) (interface{}, error) {
 	if len(resp) < MIN_OBJECT_LENGTH || !bytes.HasSuffix(resp, lineSuffix) {
 		return resp, ErrSyntaxError
 	}
@@ -45,7 +45,7 @@ func Parse(resp []byte, err error) ([]byte, error) {
 	case SIMPLE_STRING_PREFIX:
 		return String(resp), nil
 	case ERROR_PREFIX:
-		return Error(resp), Error(resp)
+		return Error(resp), nil
 	case INTEGER_PREFIX:
 		return Integer(resp), nil
 	case BULK_STRING_PREFIX:

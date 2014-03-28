@@ -14,7 +14,7 @@ func parseLenLine(line []byte) (length int, endIndex int, err error) {
 		return -1, -1, ErrSyntaxError
 	}
 
-	if line[0] != '*' && line[0] != '$' {
+	if line[0] != ARRAY_PREFIX && line[0] != BULK_STRING_PREFIX {
 		return -1, -1, ErrSyntaxError
 	}
 
