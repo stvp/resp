@@ -25,8 +25,8 @@ func TestParse(t *testing.T) {
 
 	// Error
 	obj, err = Parse([]byte("-oops\r\n"))
-	if err != nil {
-		t.Error(err)
+	if err == nil {
+		t.Error("expected error, but got nil")
 	}
 	if _, ok := obj.(Error); !ok {
 		t.Errorf("expected Error, got %#v", obj)

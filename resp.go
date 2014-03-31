@@ -43,7 +43,8 @@ func Parse(resp []byte) (interface{}, error) {
 	case SIMPLE_STRING_PREFIX:
 		return String(resp), nil
 	case ERROR_PREFIX:
-		return Error(resp), nil
+		err := Error(resp)
+		return err, err
 	case INTEGER_PREFIX:
 		return Integer(resp), nil
 	case BULK_STRING_PREFIX:
