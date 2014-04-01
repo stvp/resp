@@ -48,3 +48,10 @@ func TestParseLenLine(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkParseLenLine(b *testing.B) {
+	line := []byte("*250000\r\n")
+	for i := 0; i < b.N; i++ {
+		parseLenLine(line)
+	}
+}

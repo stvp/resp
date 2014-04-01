@@ -27,11 +27,12 @@ func parseLenLine(line []byte) (length int, endIndex int, err error) {
 	var b byte
 	var i int
 	for i, b = range line[1 : len(line)-2] {
-		if b == '\r' {
-			return n, i + 2, nil
-		}
 		if b < '0' || b > '9' {
-			return -1, i + 3, ErrSyntaxError
+			if b == '\r' {
+				return n, i + 2, nil
+			} else {
+				return -1, i + 3, ErrSyntaxError
+			}
 		}
 		n *= 10
 		n += int(b - '0')
