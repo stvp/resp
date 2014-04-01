@@ -12,3 +12,11 @@ func TestNewBulkString(t *testing.T) {
 		t.Errorf("expected: %v\ngot: %v", expected, s)
 	}
 }
+
+func TestNewSimpleString(t *testing.T) {
+	s := NewSimpleString("hi")
+	expected := []byte("+hi\r\n")
+	if !reflect.DeepEqual(expected, []byte(s)) {
+		t.Errorf("expected: %v\ngot: %v", expected, s)
+	}
+}

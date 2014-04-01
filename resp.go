@@ -1,7 +1,6 @@
 package resp
 
 import (
-	"bytes"
 	"errors"
 )
 
@@ -36,14 +35,14 @@ var (
 )
 
 // Parse takes a bytes slice for a single RESP object and returns the bytes
-// wrapped with the correct type (String, Error, Integer, or Array). If the
-// RESP is invalid, ErrSyntaxError will be returned. If the RESP is an error
-// object, the error will be returned as the response and as the error.
+// wrapped with the correct type (String, Error, Integer, or Array). If an
+// error is passed in, Parse will simply reply with the given arguments.  If
+// the given RESP is invalid, ErrSyntaxError will be returned.
 func Parse(resp []byte, err error) (interface{}, error) {
 	if err != nil {
 		return resp, err
 	}
-	if len(resp) < MIN_OBJECT_LENGTH || !bytes.HasSuffix(resp, lineSuffix) {
+	if len(resp) < MIN_OBJECT_LENGTH || resp[len(resp)-2] != '\r' || resp[len(resp)-1] != '\n' {
 		return resp, ErrSyntaxError
 	}
 
@@ -51,8 +50,7 @@ func Parse(resp []byte, err error) (interface{}, error) {
 	case SIMPLE_STRING_PREFIX:
 		return String(resp), nil
 	case ERROR_PREFIX:
-		err := Error(resp)
-		return err, err
+		return Error(resp), nil
 	case INTEGER_PREFIX:
 		return Integer(resp), nil
 	case BULK_STRING_PREFIX:

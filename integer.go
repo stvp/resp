@@ -16,7 +16,20 @@ func NewInteger(i int64) Integer {
 	return Integer(buf)
 }
 
-// Int64 returns the value of the RESP integer.
+// Int returns the value of the RESP integer as an int.
+func (i Integer) Int() (int, error) {
+	n, err := strconv.Atoi(string(i[1 : len(i)-2]))
+	if err != nil {
+		return 0, ErrSyntaxError
+	}
+	return n, nil
+}
+
+// Int64 returns the value of the RESP integer as in int64.
 func (i Integer) Int64() (int64, error) {
-	return strconv.ParseInt(string(i[1:len(i)-2]), 10, 64)
+	n, err := strconv.ParseInt(string(i[1:len(i)-2]), 10, 64)
+	if err != nil {
+		return 0, ErrSyntaxError
+	}
+	return n, nil
 }

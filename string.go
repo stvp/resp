@@ -8,7 +8,7 @@ import (
 // A String is a RESP simple string or bulk string.
 type String []byte
 
-// NewBulkString returns a RESP bulk string with the given string.
+// NewBulkString returns a String (as a bulk string) with the given contents.
 func NewBulkString(s string) String {
 	var buf bytes.Buffer
 	buf.WriteByte(BULK_STRING_PREFIX)
@@ -19,22 +19,28 @@ func NewBulkString(s string) String {
 	return String(buf.Bytes())
 }
 
+// NewSimpleString returns a String (as a simple string) with the given contents.
+func NewSimpleString(s string) String {
+	var buf bytes.Buffer
+	buf.WriteByte(SIMPLE_STRING_PREFIX)
+	buf.WriteString(s)
+	buf.Write(lineSuffix)
+	return String(buf.Bytes())
+}
+
 // Slice returns a slice pointing to the string contained in this RESP simple
 // string or bulk string.
 func (s String) Slice() []byte {
 	if s[0] == BULK_STRING_PREFIX {
 		length, lengthEndIndex, err := parseLenLine(s)
-		if err != nil {
+		if err != nil || length == -1 {
 			return nil
-		} else if length == -1 {
-			return []byte{}
 		} else {
 			return s[lengthEndIndex+1 : len(s)-2]
 		}
-	} else if s[0] == SIMPLE_STRING_PREFIX {
-		return s[1 : len(s)-2]
 	} else {
-		return s[0:0]
+		// Assume simple string
+		return s[1 : len(s)-2]
 	}
 }
 

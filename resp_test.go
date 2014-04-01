@@ -33,11 +33,11 @@ func TestParse(t *testing.T) {
 
 	// Error
 	obj, err = Parse([]byte("-oops\r\n"), nil)
+	if err != nil {
+		t.Error(err)
+	}
 	if _, ok := obj.(Error); !ok {
 		t.Errorf("expected Error as first value, got %#v", obj)
-	}
-	if _, ok := err.(Error); !ok {
-		t.Errorf("expected error as second value, got %#v", obj)
 	}
 
 	// Integer
