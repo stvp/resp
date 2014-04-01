@@ -5,7 +5,8 @@ import (
 	"fmt"
 )
 
-// Command points to the bytes for a RESP command (an array of bulk strings).
+// A Command contains a RESP array of bulk strings comprising the raw command
+// and string arguments.
 type Command []byte
 
 // NewCommand takes a Redis command and arguments and returns a Command byte

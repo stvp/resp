@@ -4,11 +4,10 @@ import (
 	"bytes"
 )
 
-// Error points to the bytes for a RESP error.
+// An Error is a RESP error byte slice.
 type Error []byte
 
-// NewError takes an error message and returns an Error slice pointing to a
-// RESP error with the given message.
+// NewError returns a RESP error with the given error message.
 func NewError(msg string) Error {
 	var buf bytes.Buffer
 	buf.WriteByte(ERROR_PREFIX)

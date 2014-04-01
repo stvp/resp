@@ -33,7 +33,8 @@ var (
 
 // Parse takes a bytes slice for a single RESP object and returns the bytes
 // wrapped with the correct type (String, Error, Integer, or Array). If the
-// RESP is invalid, ErrSyntaxError will be returned.
+// RESP is invalid, ErrSyntaxError will be returned. If the RESP is an error
+// object, the error will be returned as the response and as the error.
 func Parse(resp []byte) (interface{}, error) {
 	if len(resp) < MIN_OBJECT_LENGTH || !bytes.HasSuffix(resp, lineSuffix) {
 		return resp, ErrSyntaxError
