@@ -23,6 +23,10 @@ const (
 )
 
 var (
+	// Common responses
+	OK   = NewSimpleString("OK")
+	PONG = NewSimpleString("PONG")
+
 	// Errors
 	ErrSyntaxError = errors.New("resp: syntax error")
 	ErrBufferFull  = errors.New("resp: object is larger than buffer")
