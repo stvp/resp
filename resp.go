@@ -24,6 +24,10 @@ const (
 )
 
 var (
+	// Common responses
+	OK   = String("+OK\r\n")
+	PONG = String("+PONG\r\n")
+
 	// Errors
 	ErrSyntaxError = errors.New("resp: syntax error")
 	ErrBufferFull  = errors.New("resp: object is larger than buffer")
