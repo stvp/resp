@@ -7,12 +7,15 @@ package resp
 // bytes after the end of the length specification line are ignored.
 func parseLenLine(line []byte) (length int, endIndex int, err error) {
 	if len(line) < MIN_OBJECT_LENGTH {
+		// Bad line length
 		return 0, 0, ErrSyntaxError
 	}
 	if line[0] != ARRAY_PREFIX && line[0] != BULK_STRING_PREFIX {
+		// Bad line prefix
 		return 0, 0, ErrSyntaxError
 	}
 	if len(line) >= 5 && line[1] == '-' && line[2] == '1' && line[3] == '\r' && line[4] == '\n' {
+		// Null length shortcut
 		return -1, 4, nil
 	}
 
@@ -30,5 +33,6 @@ func parseLenLine(line []byte) (length int, endIndex int, err error) {
 		n = (n * 10) + int(b-'0')
 	}
 
+	// Missing line ending
 	return 0, 0, ErrSyntaxError
 }
