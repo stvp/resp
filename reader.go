@@ -1,6 +1,7 @@
 package resp
 
 import (
+	"bytes"
 	"io"
 )
 
@@ -94,7 +95,7 @@ func (r *Reader) indexObjectEnd(start int) int {
 
 	switch r.buf[start] {
 	case '+', '-', ':':
-		lineEnd := indexLineEnd(r.buf[start:])
+		lineEnd := bytes.Index(r.buf[start:], lineSuffix)
 		if lineEnd < 0 {
 			return -1
 		}
@@ -102,7 +103,7 @@ func (r *Reader) indexObjectEnd(start int) int {
 			r.err = ErrSyntaxError
 			return -1
 		}
-		return start + lineEnd
+		return start + lineEnd + 1
 	case '$':
 		length, lineEnd, err := parseLenLine(r.buf[start:])
 		if err != nil {

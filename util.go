@@ -1,9 +1,5 @@
 package resp
 
-import (
-	"bytes"
-)
-
 // parseLenLine takes a slice that points to the start of a RESP array or bulk
 // string length specification line and returns the array size or bulk string
 // length (respectively) and the end index of the length specification line in
@@ -35,15 +31,4 @@ func parseLenLine(line []byte) (length int, endIndex int, err error) {
 	}
 
 	return 0, 0, ErrSyntaxError
-}
-
-// indexLineEnd returns the index of the final character of the first line in
-// the given RESP byte slice. If no valid line ending can be found, it returns
-// -1.
-func indexLineEnd(slice []byte) int {
-	i := bytes.IndexByte(slice, '\n')
-	if i > 0 && slice[i-1] == '\r' {
-		return i
-	}
-	return -1
 }

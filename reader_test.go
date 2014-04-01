@@ -30,6 +30,12 @@ func TestReadObjectSlice_Valid(t *testing.T) {
 		{[]byte("$4\r\ncool\r\n"), []byte("$4\r\ncool\r\n")},
 		// null bulk string
 		{[]byte("$-1\r\n"), []byte("$-1\r\n")},
+		// bulk string with \r in string
+		{[]byte("$3\r\na\rb\r\n"), []byte("$3\r\na\rb\r\n")},
+		// bulk string with \n in string
+		{[]byte("$3\r\na\nb\r\n"), []byte("$3\r\na\nb\r\n")},
+		// bulk string with line ending in string
+		{[]byte("$4\r\na\r\nb\r\n"), []byte("$4\r\na\r\nb\r\n")},
 		// empty bulk string
 		{[]byte("$0\r\n\r\n"), []byte("$0\r\n\r\n")},
 		// array of arrays
@@ -53,6 +59,9 @@ func TestReadObjectSlice_Invalid(t *testing.T) {
 	tests := [][]byte{
 		// empty
 		[]byte{},
+		// too small
+		[]byte("\r\n"),
+		[]byte("-\r\n"),
 		// no delimiter
 		[]byte("-OK"),
 		// invalid delimiter
