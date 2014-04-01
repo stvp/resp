@@ -23,10 +23,6 @@ const (
 )
 
 var (
-	// Common responses
-	OK   = String("+OK\r\n")
-	PONG = String("+PONG\r\n")
-
 	// Errors
 	ErrSyntaxError = errors.New("resp: syntax error")
 	ErrBufferFull  = errors.New("resp: object is larger than buffer")
@@ -34,30 +30,22 @@ var (
 	lineSuffix = []byte("\r\n")
 )
 
-// Parse takes a bytes slice for a single RESP object and returns the bytes
-// wrapped with the correct type (String, Error, Integer, or Array). If an
-// error is passed in, Parse will simply reply with the given arguments.  If
-// the given RESP is invalid, ErrSyntaxError will be returned.
-func Parse(resp []byte, err error) (interface{}, error) {
-	if err != nil {
-		return resp, err
-	}
-	if len(resp) < MIN_OBJECT_LENGTH || resp[len(resp)-2] != '\r' || resp[len(resp)-1] != '\n' {
-		return resp, ErrSyntaxError
-	}
-
+// Parse takes a slice pointing to valid a valid RESP object and returns the
+// RESP as the corresponding type.
+func Parse(resp []byte) interface{} {
 	switch resp[0] {
 	case SIMPLE_STRING_PREFIX:
-		return String(resp), nil
+		return String(resp)
 	case ERROR_PREFIX:
-		return Error(resp), nil
+		return Error(resp)
 	case INTEGER_PREFIX:
-		return Integer(resp), nil
+		return Integer(resp)
 	case BULK_STRING_PREFIX:
-		return String(resp), nil
+		return String(resp)
 	case ARRAY_PREFIX:
-		return Array(resp), nil
+		return Array(resp)
 	default:
-		return resp, ErrSyntaxError
+		// This will never happen when being used with Reader
+		return resp
 	}
 }
