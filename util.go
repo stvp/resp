@@ -4,41 +4,37 @@ import (
 	"bytes"
 )
 
-// parseLenLine takes a RESP array or bulk string length specification and
-// returns the specified length as well as the index of the final character of
-// the length specification line. It returns a length of -1 for null bulk
-// strings. If the line is invalid, an error will be returned. Trailing
-// characters are ignored.
+// parseLenLine takes a slice that points to the start of a RESP array or bulk
+// string length specification line and returns the array size or bulk string
+// length (respectively) and the end index of the length specification line in
+// the given slice. If the line is invalid, an error will be returned. All
+// bytes after the end of the length specification line are ignored.
 func parseLenLine(line []byte) (length int, endIndex int, err error) {
 	if len(line) < MIN_OBJECT_LENGTH {
-		return -1, -1, ErrSyntaxError
+		return 0, 0, ErrSyntaxError
 	}
-
 	if line[0] != ARRAY_PREFIX && line[0] != BULK_STRING_PREFIX {
-		return -1, -1, ErrSyntaxError
+		return 0, 0, ErrSyntaxError
 	}
-
-	// Shortcut for null bulk strings and null arrays
-	if bytes.HasPrefix(line[1:], nullLength) {
+	if len(line) >= 5 && line[1] == '-' && line[2] == '1' && line[3] == '\r' && line[4] == '\n' {
 		return -1, 4, nil
 	}
 
 	var n int
 	var b byte
 	var i int
-	for i, b = range line[1 : len(line)-2] {
+	for i, b = range line[1:] {
 		if b < '0' || b > '9' {
-			if b == '\r' {
+			if b == '\r' && len(line) > i+2 && line[i+2] == '\n' {
 				return n, i + 2, nil
 			} else {
-				return -1, i + 3, ErrSyntaxError
+				return 0, 0, ErrSyntaxError
 			}
 		}
-		n *= 10
-		n += int(b - '0')
+		n = (n * 10) + int(b-'0')
 	}
 
-	return n, i + 3, nil
+	return 0, 0, ErrSyntaxError
 }
 
 // indexLineEnd returns the index of the final character of the first line in

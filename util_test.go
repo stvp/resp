@@ -20,11 +20,14 @@ func TestParseLenLine(t *testing.T) {
 		{[]byte("-OK\r\n"), 0, -1, true},
 		{[]byte("*0x2\r\n"), 0, -1, true},
 		{[]byte("*-19\r\n"), 0, -1, true},
+		{[]byte("*1"), 0, -1, true},
+		{[]byte("*1\r"), 0, -1, true},
 		// Valid lines
 		{[]byte("*-1\r\n"), -1, 4, false},
 		{[]byte("*1\r\n"), 1, 3, false},
 		{[]byte("*100\r\n"), 100, 5, false},
 		{[]byte("$9876\r\n"), 9876, 6, false},
+		{[]byte("$1\r\n$10"), 1, 3, false},
 		{[]byte("$1\r\n$100\r\n"), 1, 3, false},
 	}
 

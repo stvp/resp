@@ -60,6 +60,8 @@ func TestCommandSlice_Invalid(t *testing.T) {
 		[]byte("*1\r\n$-1\r\n"),
 		// too short
 		[]byte("*1\r\n$3\r\nLOL\r\n"),
+		// bad line ending
+		[]byte("*1\r\n$4\r\nPING\r"),
 	}
 
 	for i, test := range tests {
@@ -100,5 +102,12 @@ func TestNewCommandStrings(t *testing.T) {
 		if !reflect.DeepEqual(test.bytes, []byte(command)) {
 			t.Errorf("tests[%d]:\nexpected: %v\ngot: %v", i, test.bytes, command)
 		}
+	}
+}
+
+func BenchmarkCommandSlices(b *testing.B) {
+	raw := Command("*2\r\n$4\r\nINFO\r\n$3\r\nALL\r\n")
+	for i := 0; i < b.N; i++ {
+		raw.Slices()
 	}
 }

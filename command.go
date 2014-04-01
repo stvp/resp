@@ -26,7 +26,7 @@ func NewCommand(args ...string) Command {
 // invalid.
 func (c Command) Slices() ([][]byte, error) {
 	// Check for basic validity
-	if len(c) < MIN_COMMAND_LENGTH || c[0] != ARRAY_PREFIX || !bytes.HasSuffix(c, lineSuffix) {
+	if len(c) < MIN_COMMAND_LENGTH || c[0] != ARRAY_PREFIX || c[len(c)-2] != '\r' || c[len(c)-1] != '\n' {
 		return nil, ErrSyntaxError
 	}
 
