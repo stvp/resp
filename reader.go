@@ -31,11 +31,7 @@ func NewReaderSize(r io.Reader, size int) *Reader {
 }
 
 func (r *Reader) ReadObject() (interface{}, error) {
-	bytes, err := r.ReadObjectBytes()
-	if err != nil {
-		return bytes, err
-	}
-	return Parse(bytes)
+	return Parse(r.ReadObjectBytes())
 }
 
 // ReadObjectSlice reads until the buffer contains one full valid RESP object

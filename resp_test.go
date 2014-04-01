@@ -1,12 +1,20 @@
 package resp
 
 import (
+	"errors"
 	"testing"
 )
 
 func TestParse(t *testing.T) {
+	// Return error
+	e := errors.New("oops")
+	obj, err := Parse([]byte("+OK\r\n"), e)
+	if err != e {
+		t.Error(err)
+	}
+
 	// Simple string
-	obj, err := Parse([]byte("+OK\r\n"))
+	obj, err = Parse([]byte("+OK\r\n"), nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -15,7 +23,7 @@ func TestParse(t *testing.T) {
 	}
 
 	// Bulk string
-	obj, err = Parse([]byte("$4\r\ncool\r\n"))
+	obj, err = Parse([]byte("$4\r\ncool\r\n"), nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -24,7 +32,7 @@ func TestParse(t *testing.T) {
 	}
 
 	// Error
-	obj, err = Parse([]byte("-oops\r\n"))
+	obj, err = Parse([]byte("-oops\r\n"), nil)
 	if _, ok := obj.(Error); !ok {
 		t.Errorf("expected Error as first value, got %#v", obj)
 	}
@@ -33,7 +41,7 @@ func TestParse(t *testing.T) {
 	}
 
 	// Integer
-	obj, err = Parse([]byte(":123\r\n"))
+	obj, err = Parse([]byte(":123\r\n"), nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -42,7 +50,7 @@ func TestParse(t *testing.T) {
 	}
 
 	// Array
-	obj, err = Parse([]byte("*1\r\n+OK\r\n"))
+	obj, err = Parse([]byte("*1\r\n+OK\r\n"), nil)
 	if err != nil {
 		t.Error(err)
 	}
