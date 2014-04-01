@@ -18,8 +18,8 @@ func parseLenLine(line []byte) (length int, endIndex int, err error) {
 		return -1, -1, ErrSyntaxError
 	}
 
-	// Shortcut for null bulk strings
-	if len(line) > 4 && line[1] == '-' && line[2] == '1' && line[3] == '\r' && line[4] == '\n' {
+	// Shortcut for null bulk strings and null arrays
+	if bytes.HasPrefix(line[1:], nullLength) {
 		return -1, 4, nil
 	}
 

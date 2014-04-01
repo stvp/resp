@@ -29,6 +29,7 @@ var (
 	ErrBufferFull  = errors.New("resp: object is larger than buffer")
 
 	lineSuffix = []byte("\r\n")
+	nullLength = []byte("-1\r\n")
 )
 
 // Parse takes a bytes slice for a single RESP object and returns the bytes
