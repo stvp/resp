@@ -22,6 +22,8 @@ func NewCommand(args ...string) Command {
 	return buf.Bytes()
 }
 
+func (c Command) Raw() []byte { return c }
+
 // Slices returns a slice of byte slices that point to each argument in this
 // Command. It returns a ErrSyntaxError error if the command RESP bytes are
 // invalid.

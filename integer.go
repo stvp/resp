@@ -16,6 +16,8 @@ func NewInteger(i int64) Integer {
 	return Integer(buf)
 }
 
+func (i Integer) Raw() []byte { return i }
+
 // Int returns the value of the RESP integer as an int.
 func (i Integer) Int() (int, error) {
 	n, err := strconv.Atoi(string(i[1 : len(i)-2]))

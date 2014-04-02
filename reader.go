@@ -31,10 +31,10 @@ func NewReaderSize(r io.Reader, size int) *Reader {
 	}
 }
 
-func (r *Reader) ReadObject() (interface{}, error) {
+func (r *Reader) ReadObject() (Object, error) {
 	bytes, err := r.ReadObjectBytes()
 	if err != nil {
-		return bytes, err
+		return InvalidObject(bytes), err
 	}
 	return Parse(bytes), nil
 }

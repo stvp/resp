@@ -4,6 +4,8 @@ package resp
 // objects.
 type Array []byte
 
+func (a Array) Raw() []byte { return a }
+
 // TODO
 // func NewArray(objects interface{}...) Array {}
 // func (a Array) Objects() ([]interface{}, error) {}

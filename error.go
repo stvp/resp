@@ -16,6 +16,8 @@ func NewError(msg string) Error {
 	return Error(buf.Bytes())
 }
 
+func (e Error) Raw() []byte { return e }
+
 // Slice returns a slice pointing to this Error's message bytes.
 func (e Error) Slice() []byte {
 	return e[1 : len(e)-2]

@@ -34,9 +34,17 @@ var (
 	lineSuffix = []byte("\r\n")
 )
 
+type Object interface {
+	Raw() []byte
+}
+
+type InvalidObject []byte
+
+func (o InvalidObject) Raw() []byte { return o }
+
 // Parse takes a slice pointing to valid a valid RESP object and returns the
 // RESP as the corresponding type.
-func Parse(resp []byte) interface{} {
+func Parse(resp []byte) Object {
 	switch resp[0] {
 	case SIMPLE_STRING_PREFIX:
 		return String(resp)
@@ -50,6 +58,6 @@ func Parse(resp []byte) interface{} {
 		return Array(resp)
 	default:
 		// This will never happen when being used with Reader
-		return resp
+		return InvalidObject(resp)
 	}
 }

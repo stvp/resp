@@ -28,6 +28,8 @@ func NewSimpleString(s string) String {
 	return String(buf.Bytes())
 }
 
+func (s String) Raw() []byte { return s }
+
 // Slice returns a slice pointing to the string contained in this RESP simple
 // string or bulk string.
 func (s String) Slice() []byte {
