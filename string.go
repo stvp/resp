@@ -53,3 +53,7 @@ func (s String) Bytes() []byte {
 	copy(bytes, slice)
 	return bytes
 }
+
+func (s String) String() string {
+	return string(s.Slice())
+}
