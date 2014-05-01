@@ -160,3 +160,47 @@ func TestReadObjectSlice_MultipleReads_Invalid(t *testing.T) {
 		}
 	}
 }
+
+type LoopReader struct {
+	bytes []byte
+	i     int
+}
+
+func (r *LoopReader) Read(p []byte) (n int, err error) {
+	if len(p) >= len(r.bytes) {
+		copy(p, r.bytes)
+		return len(r.bytes), nil
+	} else {
+		panic("TODO handle len(p) < len(r.bytes)")
+	}
+}
+
+func BenchmarkReaderReadObjectSliceSmall(b *testing.B) {
+	// 23 bytes
+	resp := []byte("*2\r\n$4\r\nINFO\r\n$3\r\nALL\r\n")
+	reader := NewReader(&LoopReader{resp, 0})
+	var err error
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		_, err = reader.ReadObjectSlice()
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkReaderReadObjectSliceMedium(b *testing.B) {
+	// 95 bytes
+	resp := []byte("*10\r\n$3\r\nfoo\r\n$3\r\nfoo\r\n$3\r\nfoo\r\n$3\r\nfoo\r\n$3\r\nfoo\r\n$3\r\nfoo\r\n$3\r\nfoo\r\n$3\r\nfoo\r\n$3\r\nfoo\r\n$3\r\nfoo\r\n")
+	reader := NewReader(&LoopReader{resp, 0})
+	var err error
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		_, err = reader.ReadObjectSlice()
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
