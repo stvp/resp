@@ -200,7 +200,7 @@ func handlePrefix(r *Reader) stateFn {
 	}
 
 	switch r.buf[r.i] {
-	case SIMPLE_STRING_PREFIX, ERROR_PREFIX:
+	case SIMPLE_STRING_PREFIX, INTEGER_PREFIX, ERROR_PREFIX:
 		return handleLine(r)
 	case BULK_STRING_PREFIX:
 		return handleBulkString(r)

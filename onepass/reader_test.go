@@ -15,6 +15,8 @@ func TestReader_ValidRESP(t *testing.T) {
 	tests := []RespTest{
 		// simple string
 		{[]byte("+OK\r\n"), []byte("+OK\r\n")},
+		// integer
+		{[]byte(":1234\r\n"), []byte(":1234\r\n")},
 		// ignore trailing junk
 		{[]byte("+OK\r\n..."), []byte("+OK\r\n")},
 		// read only one full response
