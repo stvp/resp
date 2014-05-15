@@ -15,13 +15,13 @@ type respTest struct {
 func TestReadObjectSlice_Valid(t *testing.T) {
 	tests := []respTest{
 		// simple string
-		{[]byte("-OK\r\n"), []byte("-OK\r\n")},
+		{[]byte("+OK\r\n"), []byte("+OK\r\n")},
 		// ignore trailing junk
-		{[]byte("-OK\r\n..."), []byte("-OK\r\n")},
+		{[]byte("+OK\r\n..."), []byte("+OK\r\n")},
 		// read only one full response
-		{[]byte("-OK\r\n-ERR\r\n"), []byte("-OK\r\n")},
+		{[]byte("+OK\r\n+ERR\r\n"), []byte("+OK\r\n")},
 		// array
-		{[]byte("*2\r\n-OK\r\n-OK\r\n"), []byte("*2\r\n-OK\r\n-OK\r\n")},
+		{[]byte("*2\r\n+OK\r\n+OK\r\n"), []byte("*2\r\n+OK\r\n+OK\r\n")},
 		// null array
 		{[]byte("*-1\r\n"), []byte("*-1\r\n")},
 		// empty array
@@ -39,7 +39,7 @@ func TestReadObjectSlice_Valid(t *testing.T) {
 		// empty bulk string
 		{[]byte("$0\r\n\r\n"), []byte("$0\r\n\r\n")},
 		// array of arrays
-		{[]byte("*2\r\n*1\r\n-OK\r\n*1\r\n-OK\r\n"), []byte("*2\r\n*1\r\n-OK\r\n*1\r\n-OK\r\n")},
+		{[]byte("*2\r\n*1\r\n+OK\r\n*1\r\n+OK\r\n"), []byte("*2\r\n*1\r\n+OK\r\n*1\r\n+OK\r\n")},
 		// array with null bulk string
 		{[]byte("*3\r\n$3\r\nfoo\r\n$-1\r\n$3\r\nbar\r\n"), []byte("*3\r\n$3\r\nfoo\r\n$-1\r\n$3\r\nbar\r\n")},
 	}
@@ -63,13 +63,13 @@ func TestReadObjectSlice_Invalid(t *testing.T) {
 		[]byte("\r\n"),
 		[]byte("-\r\n"),
 		// no delimiter
-		[]byte("-OK"),
+		[]byte("+OK"),
 		// invalid delimiter
-		[]byte("-OK\r"),
+		[]byte("+OK\r"),
 		// invalid prefix
 		[]byte("OK\r\n"),
 		// array with invalid length
-		[]byte("*5\r\n-OK\r\n"),
+		[]byte("*5\r\n+OK\r\n"),
 	}
 
 	for i, test := range tests {
@@ -82,7 +82,7 @@ func TestReadObjectSlice_Invalid(t *testing.T) {
 }
 
 func TestReadObjectSlice_BufferErrors(t *testing.T) {
-	reply := []byte("-OK\r\n")
+	reply := []byte("+OK\r\n")
 	reader := NewReaderSize(bytes.NewReader(reply), len(reply)-1)
 	object, err := reader.ReadObjectSlice()
 	if err != ErrBufferFull {
@@ -101,20 +101,20 @@ type multipleReadTest struct {
 func TestReadObjectSlice_MultipleReads_Valid(t *testing.T) {
 	tests := []multipleReadTest{
 		{
-			[][]byte{[]byte("-O"), []byte("K\r"), []byte("\n")},
-			[]byte("-OK\r\n"),
+			[][]byte{[]byte("+O"), []byte("K\r"), []byte("\n")},
+			[]byte("+OK\r\n"),
 		},
 		{
 			[][]byte{[]byte("$3\r"), []byte("\nfo"), []byte("o\r\n")},
 			[]byte("$3\r\nfoo\r\n"),
 		},
 		{
-			[][]byte{[]byte("*2\r\n"), []byte("-OK\r"), []byte("\n-O"), []byte("K\r\n")},
-			[]byte("*2\r\n-OK\r\n-OK\r\n"),
+			[][]byte{[]byte("*2\r\n"), []byte("+OK\r"), []byte("\n+O"), []byte("K\r\n")},
+			[]byte("*2\r\n+OK\r\n+OK\r\n"),
 		},
 		{
-			[][]byte{[]byte("*2\r\n*"), []byte("1\r\n-OK\r"), []byte("\n-O"), []byte("K\r\n")},
-			[]byte("*2\r\n*1\r\n-OK\r\n-OK\r\n"),
+			[][]byte{[]byte("*2\r\n*"), []byte("1\r\n+OK\r"), []byte("\n+O"), []byte("K\r\n")},
+			[]byte("*2\r\n*1\r\n+OK\r\n+OK\r\n"),
 		},
 	}
 
@@ -136,8 +136,8 @@ func TestReadObjectSlice_MultipleReads_Valid(t *testing.T) {
 func TestReadObjectSlice_MultipleReads_Invalid(t *testing.T) {
 	tests := []multipleReadTest{
 		{
-			[][]byte{[]byte("-O"), []byte("K\r")},
-			[]byte("-OK\r"),
+			[][]byte{[]byte("+O"), []byte("K\r")},
+			[]byte("+OK\r"),
 		},
 		{
 			[][]byte{[]byte("$3\r")},
