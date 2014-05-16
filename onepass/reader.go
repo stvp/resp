@@ -57,21 +57,20 @@ func (r *Reader) ReadObject() ([]byte, error) {
 
 // fill reads more data in to the buffer, growing the buffer as needed.
 func (r *Reader) fill() error {
-	// If the active buffer window starts past the halfway point of the whole
-	// buffer, slide the window over to free up space for writing.
-	if r.r > len(r.buf)/2 {
-		copy(r.buf, r.buf[r.r:r.w])
+	// Grow buffer if needed.
+	if r.w > len(r.buf)/2 {
+		var buf []byte
+		if r.r > len(r.buf)/4 {
+			buf = r.buf
+		} else {
+			// Double the buffer size.
+			buf = make([]byte, len(r.buf)*2)
+		}
+		copy(buf, r.buf[r.r:r.w])
+		r.buf = buf
 		r.i -= r.r
 		r.w -= r.r
 		r.r = 0
-	}
-
-	// If the active buffer window is over half of the whole buffer size, double
-	// the buffer size.
-	if r.w > len(r.buf)/2 {
-		buf := make([]byte, len(r.buf)*2)
-		copy(buf, r.buf)
-		r.buf = buf
 	}
 
 	n, err := r.reader.Read(r.buf[r.w:])
