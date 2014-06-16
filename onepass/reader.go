@@ -30,7 +30,7 @@ type Reader struct {
 func NewReader(reader io.Reader) *Reader {
 	r := &Reader{
 		reader: reader,
-		buf:    make([]byte, 8192),
+		buf:    make([]byte, 4096),
 		r:      0,
 		i:      -1,
 		w:      0,
@@ -58,16 +58,12 @@ func (r *Reader) ReadObject() ([]byte, error) {
 // fill reads more data in to the buffer, growing the buffer as needed.
 func (r *Reader) fill() error {
 	// Grow buffer if needed.
-	if r.w > len(r.buf)/2 {
-		var buf []byte
-		if r.r > len(r.buf)/4 {
-			buf = r.buf
-		} else {
-			// Double the buffer size.
-			buf = make([]byte, len(r.buf)*2)
+	if r.w >= len(r.buf)/2 {
+		window := r.buf[r.r:r.w]
+		if r.r <= len(r.buf)/4 {
+			r.buf = make([]byte, len(r.buf)*2)
 		}
-		copy(buf, r.buf[r.r:r.w])
-		r.buf = buf
+		copy(r.buf, window)
 		r.i -= r.r
 		r.w -= r.r
 		r.r = 0
