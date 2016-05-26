@@ -6,20 +6,20 @@ import (
 
 const (
 	// A large INFO ALL response can be over 4kb, so we set the default to 8kb.
-	DEFAULT_BUFFER = 8192
+	defaultBufferLen = 8192
 
 	// Smallest valid RESP object is ":0\r\n".
-	MIN_OBJECT_LENGTH = 4
+	minObjectLen = 4
 
 	// The minimum valid command is "*1\r\n$4\r\nPING\r\n"
-	MIN_COMMAND_LENGTH = 14
+	minCommandLen = 14
 
 	// RESP object prefixes
-	SIMPLE_STRING_PREFIX = '+'
-	ERROR_PREFIX         = '-'
-	INTEGER_PREFIX       = ':'
-	BULK_STRING_PREFIX   = '$'
-	ARRAY_PREFIX         = '*'
+	simpleStringPrefix = '+'
+	errorPrefix        = '-'
+	integerPrefix      = ':'
+	bulkStringPrefix   = '$'
+	arrayPrefix        = '*'
 )
 
 var (
@@ -27,9 +27,12 @@ var (
 	OK   = NewSimpleString("OK")
 	PONG = NewSimpleString("PONG")
 
-	// Errors
+	// ErrSyntaxError is returned when invalid RESP is encountered.
 	ErrSyntaxError = errors.New("resp: syntax error")
-	ErrBufferFull  = errors.New("resp: object is larger than buffer")
+
+	// ErrBufferFull is returned when a RESP object is larger than the
+	// buffer can accommodate.
+	ErrBufferFull = errors.New("resp: object is larger than buffer")
 
 	lineSuffix = []byte("\r\n")
 )
@@ -46,15 +49,15 @@ func (o InvalidObject) Raw() []byte { return o }
 // RESP as the corresponding type.
 func Parse(resp []byte) Object {
 	switch resp[0] {
-	case SIMPLE_STRING_PREFIX:
+	case simpleStringPrefix:
 		return String(resp)
-	case ERROR_PREFIX:
+	case errorPrefix:
 		return Error(resp)
-	case INTEGER_PREFIX:
+	case integerPrefix:
 		return Integer(resp)
-	case BULK_STRING_PREFIX:
+	case bulkStringPrefix:
 		return String(resp)
-	case ARRAY_PREFIX:
+	case arrayPrefix:
 		return Array(resp)
 	default:
 		// This will never happen when being used with Reader

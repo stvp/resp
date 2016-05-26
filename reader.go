@@ -22,7 +22,7 @@ func NewReader(r io.Reader) *Reader {
 // size is less than 1, the default buffer size will be used.
 func NewReaderSize(r io.Reader, size int) *Reader {
 	if size < 1 {
-		size = DEFAULT_BUFFER
+		size = defaultBufferLen
 	}
 
 	return &Reader{
@@ -44,10 +44,10 @@ func (r *Reader) ReadObject() (Object, error) {
 // object. The byte slice stops being valid after the next read on this Reader.
 // If ReadObjectSlice encounters an error before finding a valid RESP object,
 // it returns all data in the buffer and the error itself. A ErrBufferFull
-// error typically indicates that the RESP object is larger than the buffer. In
-// general. Errors returned by ReadObjectSlice should be considered fatal
-// because there's no easy way to recover from them when processing a stream of
-// RESP objects.
+// error typically indicates that the RESP object is larger than the
+// buffer. Errors returned by ReadObjectSlice should be considered fatal
+// because there's no easy way to recover from them when processing a
+// stream of RESP objects.
 func (r *Reader) ReadObjectSlice() ([]byte, error) {
 	i := r.indexObjectEnd(r.r)
 	if i > r.r {
@@ -93,7 +93,7 @@ func (r *Reader) Buffered() int {
 // beginning at the given position. It returns -1 if a valid object can't be
 // found.
 func (r *Reader) indexObjectEnd(start int) int {
-	if r.Buffered()-start < MIN_OBJECT_LENGTH {
+	if r.Buffered()-start < minObjectLen {
 		return -1
 	}
 
@@ -103,7 +103,7 @@ func (r *Reader) indexObjectEnd(start int) int {
 		if lineEnd < 0 {
 			return -1
 		}
-		if lineEnd+1 < MIN_OBJECT_LENGTH-2 {
+		if lineEnd+1 < minObjectLen-2 {
 			r.err = ErrSyntaxError
 			return -1
 		}

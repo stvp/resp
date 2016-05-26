@@ -9,7 +9,7 @@ type Integer []byte
 // NewInteger takes an integer and returns an Integer slice containing a valid
 // RESP integer.
 func NewInteger(i int64) Integer {
-	buf := []byte{INTEGER_PREFIX}
+	buf := []byte{integerPrefix}
 	strconv.AppendInt(buf, i, 10)
 	buf = append(buf, '\r', '\n')
 	return Integer(buf)

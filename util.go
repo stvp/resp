@@ -6,11 +6,11 @@ package resp
 // the given slice. If the line is invalid, an error will be returned. All
 // bytes after the end of the length specification line are ignored.
 func parseLenLine(line []byte) (length int, endIndex int, err error) {
-	if len(line) < MIN_OBJECT_LENGTH {
+	if len(line) < minObjectLen {
 		// Bad line length
 		return 0, 0, ErrSyntaxError
 	}
-	if line[0] != ARRAY_PREFIX && line[0] != BULK_STRING_PREFIX {
+	if line[0] != arrayPrefix && line[0] != bulkStringPrefix {
 		// Bad line prefix
 		return 0, 0, ErrSyntaxError
 	}

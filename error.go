@@ -10,7 +10,7 @@ type Error []byte
 // NewError returns a RESP error with the given error message.
 func NewError(msg string) Error {
 	var buf bytes.Buffer
-	buf.WriteByte(ERROR_PREFIX)
+	buf.WriteByte(errorPrefix)
 	buf.WriteString(msg)
 	buf.Write(lineSuffix)
 	return Error(buf.Bytes())
