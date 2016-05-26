@@ -42,6 +42,8 @@ func TestReadObjectSlice_Valid(t *testing.T) {
 		{[]byte("*2\r\n*1\r\n-OK\r\n*1\r\n-OK\r\n"), []byte("*2\r\n*1\r\n-OK\r\n*1\r\n-OK\r\n")},
 		// array with null bulk string
 		{[]byte("*3\r\n$3\r\nfoo\r\n$-1\r\n$3\r\nbar\r\n"), []byte("*3\r\n$3\r\nfoo\r\n$-1\r\n$3\r\nbar\r\n")},
+		// array with 1 byte length integer
+		{[]byte("*3\r\n*4\r\n:5462\r\n:10922\r\n*2\r\n$9\r\n127.0.0.1\r\n:7932\r\n*2\r\n$9\r\n127.0.0.1\r\n:8032\r\n*4\r\n:0\r\n:5461\r\n*2\r\n$9\r\n127.0.0.1\r\n:7931\r\n*2\r\n$9\r\n127.0.0.1\r\n:8031\r\n*3\r\n:10923\r\n:16383\r\n*2\r\n$9\r\n127.0.0.1\r\n:7933\r\n"), []byte("*3\r\n*4\r\n:5462\r\n:10922\r\n*2\r\n$9\r\n127.0.0.1\r\n:7932\r\n*2\r\n$9\r\n127.0.0.1\r\n:8032\r\n*4\r\n:0\r\n:5461\r\n*2\r\n$9\r\n127.0.0.1\r\n:7931\r\n*2\r\n$9\r\n127.0.0.1\r\n:8031\r\n*3\r\n:10923\r\n:16383\r\n*2\r\n$9\r\n127.0.0.1\r\n:7933\r\n")},
 	}
 
 	for i, test := range tests {
