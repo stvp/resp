@@ -3,9 +3,8 @@ resp
 
 [![Build Status](https://travis-ci.org/stvp/resp.svg?branch=master)](https://travis-ci.org/stvp/resp)
 
-resp is an in-progress Go package that provides helpful tools for reading and
-writing [Redis protocol][resp] objects. It is under active development and the
-API is not stable.
+resp is an (incomplete) Go package that provides helpful tools for
+reading and writing [Redis protocol][resp] objects.
 
 [Documentation][docs]
 
@@ -15,12 +14,10 @@ API is not stable.
 Benchmarks
 ----------
 
-All benchmarks run on a MacBook Pro (Retina) 2.3 GHz Intel Core i7
+Benchmarks run on a 2015 MacBook with 1.1 GHz Intel Core M:
 
-**5/1/14**
-
-    BenchmarkCommandSlices	10000000	       160 ns/op
-    BenchmarkReaderReadObjectSliceSmall	20000000	        74.5 ns/op	(294 MB/sec)
-    BenchmarkReaderReadObjectSliceMedium	10000000	       232 ns/op	(390 MB/sec)
-    BenchmarkParseLenLine	100000000	        15.6 ns/op
+    BenchmarkCommandSlices-4              	10000000	       211 ns/op	      48 B/op	       1 allocs/op
+    BenchmarkReaderReadObjectSliceSmall-4 	20000000	        98.7 ns/op	       0 B/op	       0 allocs/op
+    BenchmarkReaderReadObjectSliceMedium-4	 5000000	       277 ns/op	       0 B/op	       0 allocs/op
+    BenchmarkParseLenLine-4               	100000000	        19.3 ns/op	       0 B/op	       0 allocs/op
 
