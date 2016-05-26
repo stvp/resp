@@ -28,6 +28,7 @@ func NewSimpleString(s string) String {
 	return String(buf.Bytes())
 }
 
+// Raw returns the underlying bytes of this RESP object.
 func (s String) Raw() []byte { return s }
 
 // Slice returns a slice pointing to the string contained in this RESP simple
@@ -37,13 +38,12 @@ func (s String) Slice() []byte {
 		length, lengthEndIndex, err := parseLenLine(s)
 		if err != nil || length == -1 {
 			return nil
-		} else {
-			return s[lengthEndIndex+1 : len(s)-2]
 		}
-	} else {
-		// Assume simple string
-		return s[1 : len(s)-2]
+		return s[lengthEndIndex+1 : len(s)-2]
 	}
+
+	// Assume simple string
+	return s[1 : len(s)-2]
 }
 
 // Bytes is the same as Slice except that it returns a copied slice.

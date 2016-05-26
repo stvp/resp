@@ -22,6 +22,7 @@ func NewCommand(args ...string) Command {
 	return buf.Bytes()
 }
 
+// Raw returns the underlying bytes of this RESP object.
 func (c Command) Raw() []byte { return c }
 
 // Slices returns a slice of byte slices that point to each argument in this
@@ -41,8 +42,8 @@ func (c Command) Slices() ([][]byte, error) {
 
 	args := make([][]byte, argCount)
 	var end, length int
-	for i, _ := range args {
-		cursor += 1
+	for i := range args {
+		cursor++
 		if cursor >= len(c) {
 			return nil, ErrSyntaxError
 		}
@@ -52,6 +53,7 @@ func (c Command) Slices() ([][]byte, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		// Null bulk strings are invalid in RESP commands
 		if length < 0 {
 			return nil, ErrSyntaxError

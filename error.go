@@ -16,6 +16,7 @@ func NewError(msg string) Error {
 	return Error(buf.Bytes())
 }
 
+// Raw returns the underlying bytes of this RESP object.
 func (e Error) Raw() []byte { return e }
 
 // Slice returns a slice pointing to this Error's message bytes.

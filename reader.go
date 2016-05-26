@@ -118,13 +118,14 @@ func (r *Reader) indexObjectEnd(start int) int {
 		lineEnd += start
 		if length == -1 {
 			return lineEnd
-		} else {
-			bulkStringEnd := lineEnd + length + 2
-			if bulkStringEnd >= r.w {
-				return -1
-			}
-			return bulkStringEnd
 		}
+
+		bulkStringEnd := lineEnd + length + 2
+		if bulkStringEnd >= r.w {
+			return -1
+		}
+
+		return bulkStringEnd
 	case '*':
 		length, lineEnd, err := parseLenLine(r.buf[start:])
 		if err != nil {
@@ -135,16 +136,17 @@ func (r *Reader) indexObjectEnd(start int) int {
 		lineEnd += start
 		if length == -1 {
 			return lineEnd
-		} else {
-			end := lineEnd
-			for i := 0; i < length; i++ {
-				end = r.indexObjectEnd(end + 1)
-				if end < 0 {
-					return -1
-				}
-			}
-			return end
 		}
+
+		end := lineEnd
+		for i := 0; i < length; i++ {
+			end = r.indexObjectEnd(end + 1)
+			if end < 0 {
+				return -1
+			}
+		}
+
+		return end
 	default:
 		r.err = ErrSyntaxError
 		return -1

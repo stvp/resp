@@ -4,7 +4,6 @@ import (
 	"strconv"
 )
 
-// Error points to the bytes for a RESP integer.
 type Integer []byte
 
 // NewInteger takes an integer and returns an Integer slice containing a valid
@@ -16,6 +15,7 @@ func NewInteger(i int64) Integer {
 	return Integer(buf)
 }
 
+// Raw returns the underlying bytes of this RESP object.
 func (i Integer) Raw() []byte { return i }
 
 // Int returns the value of the RESP integer as an int.

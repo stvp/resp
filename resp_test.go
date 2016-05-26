@@ -1,8 +1,6 @@
 package resp
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestParse(t *testing.T) {
 	// Simple string

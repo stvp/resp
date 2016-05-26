@@ -4,6 +4,7 @@ package resp
 // objects.
 type Array []byte
 
+// Raw returns the underlying bytes of this RESP object.
 func (a Array) Raw() []byte { return a }
 
 // TODO

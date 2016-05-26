@@ -172,9 +172,8 @@ func (r *LoopReader) Read(p []byte) (n int, err error) {
 	if len(p) >= len(r.bytes) {
 		copy(p, r.bytes)
 		return len(r.bytes), nil
-	} else {
-		panic("TODO handle len(p) < len(r.bytes)")
 	}
+	panic("TODO handle len(p) < len(r.bytes)")
 }
 
 func BenchmarkReaderReadObjectSliceSmall(b *testing.B) {

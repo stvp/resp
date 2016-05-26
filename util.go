@@ -26,9 +26,8 @@ func parseLenLine(line []byte) (length int, endIndex int, err error) {
 		if b < '0' || b > '9' {
 			if b == '\r' && len(line) > i+2 && line[i+2] == '\n' {
 				return n, i + 2, nil
-			} else {
-				return 0, 0, ErrSyntaxError
 			}
+			return 0, 0, ErrSyntaxError
 		}
 		n = (n * 10) + int(b-'0')
 	}
