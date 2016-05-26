@@ -103,7 +103,7 @@ func (r *Reader) indexObjectEnd(start int) int {
 		if lineEnd < 0 {
 			return -1
 		}
-		if lineEnd+1 < MIN_OBJECT_LENGTH {
+		if lineEnd+1 < MIN_OBJECT_LENGTH-2 {
 			r.err = ErrSyntaxError
 			return -1
 		}

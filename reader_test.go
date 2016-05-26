@@ -42,6 +42,8 @@ func TestReadObjectSlice_Valid(t *testing.T) {
 		{[]byte("*2\r\n*1\r\n-OK\r\n*1\r\n-OK\r\n"), []byte("*2\r\n*1\r\n-OK\r\n*1\r\n-OK\r\n")},
 		// array with null bulk string
 		{[]byte("*3\r\n$3\r\nfoo\r\n$-1\r\n$3\r\nbar\r\n"), []byte("*3\r\n$3\r\nfoo\r\n$-1\r\n$3\r\nbar\r\n")},
+		// smallest possible object (GitHub Issue #1)
+		{[]byte(":0\r\n"), []byte(":0\r\n")},
 	}
 
 	for i, test := range tests {
