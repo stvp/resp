@@ -59,7 +59,7 @@ func TestCommandSlice_Invalid(t *testing.T) {
 		// nil bulk string
 		[]byte("*1\r\n$-1\r\n"),
 		// too short
-		[]byte("*1\r\n$3\r\nLOL\r\n"),
+		[]byte("*1\r\n$0\r\n\r\n"),
 		// bad line ending
 		[]byte("*1\r\n$4\r\nPING\r"),
 	}

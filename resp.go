@@ -11,8 +11,8 @@ const (
 	// Smallest valid RESP object is ":0\r\n".
 	minObjectLen = 4
 
-	// The minimum valid command is "*1\r\n$4\r\nPING\r\n"
-	minCommandLen = 14
+	// The minimum valid command is a single character bulk string: "*1\r\n$1\r\nX\r\n"
+	minCommandLen = 11
 
 	// RESP object prefixes
 	simpleStringPrefix = '+'
